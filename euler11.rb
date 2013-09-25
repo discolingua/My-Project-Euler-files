@@ -1,3 +1,15 @@
+class SparseArray
+    attr_reader :hash
+
+    def initialize
+        @hash = {}
+    end
+
+    def [](key)
+        hash[key] ||= {}
+    end
+end
+
 bigarray = [8,02,22,97,38,15,00,40,00,75,04,05,07,78,52,12,50,77,91,8,
 49,49,99,40,17,81,18,57,60,87,17,40,98,43,69,48,04,56,62,00,
 81,49,31,73,55,79,14,29,93,71,40,67,53,88,30,03,49,13,36,65,
@@ -19,16 +31,56 @@ bigarray = [8,02,22,97,38,15,00,40,00,75,04,05,07,78,52,12,50,77,91,8,
 20,73,35,29,78,31,90,1,74,31,49,71,48,86,81,16,23,57,05,54,
 1,70,54,71,83,51,54,69,16,92,33,48,61,43,52,1,89,19,67,48]
 
+grid = SparseArray.new
+bigProd = 0
 
-grid = Array.new
-k = 0
+i = 0
 
-for i in 0..19
-  for j in 00..19
-    grid[i][j] = bigarray[k]
-    k += 1
-  end
+for r in 0..19
+    for c in 00..19
+        grid[r][c] = bigarray[i]
+        i += 1
+    end
 end
 
-puts grid[0][0].to_s + " " + grid[0][1].to_s + " " + grid[0][2].to_s
-puts grid[1][0].to_s + " " + grid[1][1].to_s + " " + grid[1][2].to_s
+# left -> right search
+for r in 0..19
+    for c in 0..16
+        i = grid[r][c] * grid[r][c+1] * grid[r][c+2] * grid[r][c+3]
+        if i > bigProd
+            bigProd = i
+        end
+    end
+end
+
+# top -> bottom search
+for r in 0..16
+    for c in 0..16
+        i = grid[r][c] * grid[r+1][c] * grid[r+2][c] * grid[r+3][c]
+        if i > bigProd
+            bigProd = i
+        end
+    end
+end
+
+# NW -> SE search
+for r in 0..16
+    for c in 0..16
+        i = grid[r][c] * grid[r+1][c+1] * grid[r+2][c+2] * grid[r+3][c+3]
+        if i > bigProd
+            bigProd = i
+        end
+    end
+end
+
+# NE -> SW search
+for r in 0..16
+    for c in 3..19
+        i = grid[r][c] * grid[r+1][c-1] * grid[r+2][c-2] * grid[r+3][c-3]
+        if i > bigProd
+            bigProd = i
+        end
+    end
+end
+
+puts bigProd.to_s
